@@ -13,5 +13,6 @@ class NavigationStructure {
     object HomeGraph {
         const val ROOT = "home"
         const val POSTS = "posts"
+        const val NickList = "nicklist"
     }
 }

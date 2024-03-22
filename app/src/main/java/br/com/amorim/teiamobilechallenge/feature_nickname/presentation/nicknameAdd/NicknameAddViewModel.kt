@@ -1,4 +1,4 @@
-package br.com.amorim.teiamobilechallenge.feature_nickname.presentation.nicknames
+package br.com.amorim.teiamobilechallenge.feature_nickname.presentation.nicknameAdd
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class NicknamesViewModel @Inject constructor(
+class NicknameAddViewModel @Inject constructor(
     private val nicknameUseCases: NicknameUseCases,
 ) : ViewModel() {
 
@@ -30,9 +30,9 @@ class NicknamesViewModel @Inject constructor(
     private val _eventFlow = MutableSharedFlow<UiEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
 
-    fun onEvent(event: NicknamesEvent) {
+    fun onEvent(event: NicknameAddEvent) {
         when (event) {
-            is NicknamesEvent.SaveNickname -> {
+            is NicknameAddEvent.SaveNickname -> {
                 viewModelScope.launch {
                     try {
                         nicknameUseCases.addNickName(
@@ -62,7 +62,7 @@ class NicknamesViewModel @Inject constructor(
                 }
             }
 
-            is NicknamesEvent.NicknameChanged -> {
+            is NicknameAddEvent.NicknameChanged -> {
                 _isError.value = false
                 _errorText.value = ""
                 _nickname.value = event.value

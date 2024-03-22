@@ -9,6 +9,7 @@ import br.com.amorim.teiamobilechallenge.feature_nickname.data.data_source.local
 import br.com.amorim.teiamobilechallenge.feature_nickname.data.repository.NicknameRepositoryImpl
 import br.com.amorim.teiamobilechallenge.feature_nickname.domain.repository.NicknameRepository
 import br.com.amorim.teiamobilechallenge.feature_nickname.domain.use_case.AddNickName
+import br.com.amorim.teiamobilechallenge.feature_nickname.domain.use_case.GetNicknames
 import br.com.amorim.teiamobilechallenge.feature_nickname.domain.use_case.NicknameUseCases
 import br.com.amorim.teiamobilechallenge.feature_posts.data.local.PostDatabase
 import br.com.amorim.teiamobilechallenge.feature_posts.data.local.PostEntity
@@ -81,6 +82,7 @@ object AppModule {
     fun provideNicknameUseCases(repository: NicknameRepository): NicknameUseCases {
         return NicknameUseCases(
             addNickName = AddNickName(repository),
+            getAllNicknames = GetNicknames(repository)
         )
     }
 }

@@ -11,7 +11,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navDeepLink
 import androidx.paging.compose.collectAsLazyPagingItems
-import br.com.amorim.teiamobilechallenge.feature_nickname.presentation.nicknames.HomeScreen
+import br.com.amorim.teiamobilechallenge.feature_nickname.presentation.nicknameAdd.HomeScreen
+import br.com.amorim.teiamobilechallenge.feature_nickname.presentation.nicknameList.NicknameListScreen
 import br.com.amorim.teiamobilechallenge.feature_posts.presentation.PostScreen
 import br.com.amorim.teiamobilechallenge.feature_posts.presentation.PostViewModel
 import br.com.amorim.teiamobilechallenge.ui.components.BottomBar
@@ -44,6 +45,9 @@ fun RootNavigationGraph(navController: NavHostController) {
                     val viewModel = hiltViewModel<PostViewModel>()
                     val posts = viewModel.postPagingFlow.collectAsLazyPagingItems()
                     PostScreen(navController = navController, posts = posts)
+                }
+                composable(route = AppGraph.home.NickList) {
+                    NicknameListScreen()
                 }
             }
         }

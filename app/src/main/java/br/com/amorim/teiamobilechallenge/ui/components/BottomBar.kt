@@ -5,7 +5,7 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -18,9 +18,9 @@ import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import br.com.amorim.teiamobilechallenge.R
 import br.com.amorim.teiamobilechallenge.ui.navigation.NavigationStructure
-import androidx.navigation.compose.currentBackStackEntryAsState
 
 //****************************************************************
 //  Configuração dos itens da barra de navegação
@@ -40,6 +40,12 @@ sealed class BottomBarItemConfig(
         icon = Icons.AutoMirrored.Filled.List,
         title =R.string.posts
     )
+
+    data object Apelidos : BottomBarItemConfig(
+        route = NavigationStructure.AppGraph.home.NickList,
+        icon = Icons.Default.Person,
+        title = R.string.nicknames
+    )
 }
 
 // ****************************************************************
@@ -48,7 +54,8 @@ sealed class BottomBarItemConfig(
 object BottomBarConfigList {
     val all = listOf(
         BottomBarItemConfig.Home,
-        BottomBarItemConfig.Posts
+        BottomBarItemConfig.Posts,
+        BottomBarItemConfig.Apelidos
     )
 }
 

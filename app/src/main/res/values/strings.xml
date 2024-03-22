@@ -6,4 +6,5 @@
     <string name="nickname_saved">O apelido foi salvo!</string>
     <string name="home">Início</string>
     <string name="posts">Posts</string>
+    <string name="nicknames">Apelidos</string>
 </resources>

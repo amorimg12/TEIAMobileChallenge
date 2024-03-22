@@ -1,4 +1,4 @@
-package br.com.amorim.teiamobilechallenge.feature_nickname.presentation.nicknames
+package br.com.amorim.teiamobilechallenge.feature_nickname.presentation.nicknameAdd
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -15,7 +15,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -29,6 +28,7 @@ import br.com.amorim.teiamobilechallenge.R
 import br.com.amorim.teiamobilechallenge.feature_nickname.domain.model.Nickname
 import br.com.amorim.teiamobilechallenge.feature_nickname.domain.repository.NicknameRepository
 import br.com.amorim.teiamobilechallenge.feature_nickname.domain.use_case.AddNickName
+import br.com.amorim.teiamobilechallenge.feature_nickname.domain.use_case.GetNicknames
 import br.com.amorim.teiamobilechallenge.feature_nickname.domain.use_case.NicknameUseCases
 import br.com.amorim.teiamobilechallenge.ui.theme.TEIAMobileChallengeTheme
 import kotlinx.coroutines.flow.Flow
@@ -38,10 +38,9 @@ import kotlinx.coroutines.flow.flowOf
 @Composable
 fun HomeScreen(
     navController: NavHostController,
-    viewModel: NicknamesViewModel = hiltViewModel(),
+    viewModel: NicknameAddViewModel = hiltViewModel(),
     pat: Int,
 ) {
-    val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
     val nicknameState = viewModel.nickname.value
     val context = LocalContext.current
@@ -52,13 +51,13 @@ fun HomeScreen(
     LaunchedEffect(key1 = true) {
         viewModel.eventFlow.collectLatest { event ->
             when (event) {
-                is NicknamesViewModel.UiEvent.ShowSnackbar -> {
+                is NicknameAddViewModel.UiEvent.ShowSnackbar -> {
                     snackbarHostState.showSnackbar(
                         message = event.message
                     )
                 }
 
-                is NicknamesViewModel.UiEvent.SavedNickname -> {
+                is NicknameAddViewModel.UiEvent.SavedNickname -> {
                     snackbarHostState.showSnackbar(
                         message = context.getString(R.string.nickname_saved)
                     )
@@ -97,7 +96,7 @@ fun HomeScreen(
                             .padding(start = 16.dp, end = 16.dp),
                         value = nicknameState,
                         onValueChange = {
-                            viewModel.onEvent(NicknamesEvent.NicknameChanged(it))
+                            viewModel.onEvent(NicknameAddEvent.NicknameChanged(it))
                         },
                         isError = errorState.value,
                         supportingText = { Text(errorMessageState.value) }
@@ -109,7 +108,7 @@ fun HomeScreen(
                             .align(Alignment.CenterHorizontally),
                         onClick = {
                             viewModel.onEvent(
-                                NicknamesEvent.SaveNickname(
+                                NicknameAddEvent.SaveNickname(
                                     Nickname(
                                         pat = pat,
                                         nickname = nicknameState,
@@ -130,8 +129,8 @@ fun HomeScreen(
 fun HomeScreenPreview() {
     HomeScreen(
         rememberNavController(), pat = 1,
-        viewModel = NicknamesViewModel(
-            NicknameUseCases(AddNickName(FakeNicknamesRepository()))
+        viewModel = NicknameAddViewModel(
+            NicknameUseCases(AddNickName(FakeNicknamesRepository()), GetNicknames(FakeNicknamesRepository()))
         )
     )
 }
