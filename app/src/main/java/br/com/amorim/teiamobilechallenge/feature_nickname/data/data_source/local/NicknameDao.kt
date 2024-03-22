@@ -20,7 +20,7 @@ interface NicknameDao {
     @Query("SELECT * FROM nickname WHERE nickname = :nickname")
     suspend fun getNicknameByNickname(nickname: String): Nickname?
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.ABORT)
     suspend fun insertNickname(nickname: Nickname)
 
     @Delete

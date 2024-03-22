@@ -5,7 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import br.com.amorim.teiamobilechallenge.feature_nickname.domain.model.InvalidNickNameException
-import br.com.amorim.teiamobilechallenge.feature_nickname.domain.model.Nickname
+import br.com.amorim.teiamobilechallenge.feature_nickname.domain.model.InvalidPATException
 import br.com.amorim.teiamobilechallenge.feature_nickname.domain.use_case.NicknameUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -15,9 +15,11 @@ import javax.inject.Inject
 
 @HiltViewModel
 class NicknamesViewModel @Inject constructor(
-    private val nicknameUseCases: NicknameUseCases
+    private val nicknameUseCases: NicknameUseCases,
 ) : ViewModel() {
 
+    private val _patError = mutableStateOf(false)
+    val patError: State<Boolean> = _patError
     private val _nickname = mutableStateOf("")
     val nickname: State<String> = _nickname
     private val _isError = mutableStateOf(false)
@@ -34,13 +36,12 @@ class NicknamesViewModel @Inject constructor(
                 viewModelScope.launch {
                     try {
                         nicknameUseCases.addNickName(
-                            Nickname(
-                                nickname = nickname.value,
-                                timestamp = System.currentTimeMillis(),
-                            )
+                            event.nickname
                         )
                         _isError.value = false
+                        _patError.value = false
                         _errorText.value = ""
+                        _nickname.value = ""
                         _eventFlow.emit(UiEvent.SavedNickname)
                     } catch (e: InvalidNickNameException) {
                         _isError.value = true
@@ -48,6 +49,13 @@ class NicknamesViewModel @Inject constructor(
                         _eventFlow.emit(
                             UiEvent.ShowSnackbar(
                                 message = "Há erros no formulário."
+                            )
+                        )
+                    } catch (e: InvalidPATException) {
+                        _patError.value = true
+                        _eventFlow.emit(
+                            UiEvent.ShowSnackbar(
+                                message = "Há um problema com o PAT"
                             )
                         )
                     }
@@ -61,8 +69,9 @@ class NicknamesViewModel @Inject constructor(
             }
         }
     }
+
     sealed class UiEvent {
-        data class ShowSnackbar(val message: String): UiEvent()
-        data object SavedNickname: UiEvent()
+        data class ShowSnackbar(val message: String) : UiEvent()
+        data object SavedNickname : UiEvent()
     }
 }

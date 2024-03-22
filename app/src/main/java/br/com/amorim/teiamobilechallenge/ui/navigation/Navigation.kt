@@ -9,6 +9,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navDeepLink
 import androidx.paging.compose.collectAsLazyPagingItems
 import br.com.amorim.teiamobilechallenge.feature_nickname.presentation.nicknames.HomeScreen
 import br.com.amorim.teiamobilechallenge.feature_posts.presentation.PostScreen
@@ -30,8 +31,14 @@ fun RootNavigationGraph(navController: NavHostController) {
                 route = RootGraph.ROOT,
                 startDestination = AppGraph.home.ROOT
             ) {
-                composable(route = AppGraph.home.ROOT) {
-                    HomeScreen(navController = navController)
+                composable(
+                    deepLinks = listOf(navDeepLink {
+                        uriPattern = "caixa.gov.br://meupat?pat={pat}"
+                    }),
+                    route = AppGraph.home.ROOT
+                ) { backStackEntry ->
+                    val pat = backStackEntry.arguments?.getString("pat")?.toInt() ?: 0
+                    HomeScreen(navController = navController, pat = pat)
                 }
                 composable(route = AppGraph.home.POSTS) {
                     val viewModel = hiltViewModel<PostViewModel>()
