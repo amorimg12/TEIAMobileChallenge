@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">TEIA Mobile Challenge</string>
+    <string name="app_name_title">TEIA Mobile Challenge</string>
+    <string name="label_nickname">Apelido</string>
+    <string name="button_home_save">Salvar</string>
+    <string name="nickname_saved">O apelido foi salvo!</string>
+    <string name="home">Início</string>
+    <string name="posts">Posts</string>
+</resources>
