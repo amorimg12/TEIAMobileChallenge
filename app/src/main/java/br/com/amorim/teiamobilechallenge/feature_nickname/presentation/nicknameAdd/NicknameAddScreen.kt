@@ -2,7 +2,6 @@ package br.com.amorim.teiamobilechallenge.feature_nickname.presentation.nickname
 
 import android.Manifest
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -42,7 +41,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -79,15 +78,17 @@ fun HomeScreen(
     val errorMessageState = viewModel.errorText
     val patError = viewModel.patError
 
-    val density = LocalDensity.current.density
-    var capturedBitmap by remember { mutableStateOf<Bitmap?>(null) }
-
     var camPreviewDialog by remember { mutableStateOf(false) }
-    val controller = remember {
-        LifecycleCameraController(context).apply {
-            setEnabledUseCases(
-                CameraController.IMAGE_CAPTURE
-            )
+
+    var controller : LifecycleCameraController? = null
+
+    if(!LocalInspectionMode.current) {
+        controller = remember {
+            LifecycleCameraController(context).apply {
+                setEnabledUseCases(
+                    CameraController.IMAGE_CAPTURE
+                )
+            }
         }
     }
 
@@ -127,7 +128,6 @@ fun HomeScreen(
 
                 is NicknameAddViewModel.UiEvent.PictureTaken -> {
                     camPreviewDialog = false
-                    capturedBitmap = viewModel.bitmap.value
                     snackbarHostState.showSnackbar(
                         message = event.message
                     )
@@ -187,11 +187,16 @@ fun HomeScreen(
                                 }
                             }
                             .align(Alignment.CenterHorizontally)
-                            .padding(16.dp)
+                            .padding(top = 16.dp)
                             .size(100.dp),
-                        model = capturedBitmap,
+                        model = viewModel.bitmap.value,
                         error = painterResource(id = R.drawable.ic_launcher_background),
                         contentDescription = "photo")
+                    Text(
+                        text = stringResource(R.string.click_to_take_picture),
+                        style = MaterialTheme.typography.labelSmall,
+                        modifier = Modifier.align(Alignment.CenterHorizontally)
+                    )
 
                     Button(
                         modifier = Modifier
@@ -213,71 +218,73 @@ fun HomeScreen(
                 }
             })
         if (camPreviewDialog) {
-            BasicAlertDialog(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .fillMaxSize()
-                    .padding(16.dp),
-                properties = DialogProperties(
-                    usePlatformDefaultWidth = false,
-                    dismissOnBackPress = true
-                ),
-                onDismissRequest = {
-                    camPreviewDialog = false
-                },
-                content = {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(16.dp)
-                    ) {
-                        CameraPreview(
-                            controller = controller,
+            if(!LocalInspectionMode.current) {
+                BasicAlertDialog(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .fillMaxSize()
+                        .padding(16.dp),
+                    properties = DialogProperties(
+                        usePlatformDefaultWidth = false,
+                        dismissOnBackPress = true
+                    ),
+                    onDismissRequest = {
+                        camPreviewDialog = false
+                    },
+                    content = {
+                        Box(
                             modifier = Modifier
                                 .fillMaxSize()
-                        )
-
-                        IconButton(
-                            onClick = {
-                                controller.cameraSelector =
-                                    if (controller.cameraSelector == CameraSelector.DEFAULT_BACK_CAMERA) {
-                                        CameraSelector.DEFAULT_FRONT_CAMERA
-                                    } else CameraSelector.DEFAULT_BACK_CAMERA
-                            },
-                            modifier = Modifier
-                                .offset(16.dp, 16.dp)
+                                .padding(16.dp)
                         ) {
-                            Icon(
-                                imageVector = Icons.Default.Refresh,
-                                contentDescription = "Switch camera"
+                            CameraPreview(
+                                controller = controller,
+                                modifier = Modifier
+                                    .fillMaxSize()
                             )
-                        }
 
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .align(Alignment.BottomCenter)
-                                .padding(16.dp),
-                            horizontalArrangement = Arrangement.SpaceAround
-                        ) {
                             IconButton(
                                 onClick = {
-                                    viewModel.onEvent(
-                                        NicknameAddEvent.TakePicture(
-                                            controller,
-                                            context
-                                        )
-                                    )
-                                }
+                                    controller?.cameraSelector =
+                                        if (controller?.cameraSelector == CameraSelector.DEFAULT_BACK_CAMERA) {
+                                            CameraSelector.DEFAULT_FRONT_CAMERA
+                                        } else CameraSelector.DEFAULT_BACK_CAMERA
+                                },
+                                modifier = Modifier
+                                    .offset(16.dp, 16.dp)
                             ) {
                                 Icon(
-                                    imageVector = Icons.Default.CheckCircle,
-                                    contentDescription = "Take photo"
+                                    imageVector = Icons.Default.Refresh,
+                                    contentDescription = "Switch camera"
                                 )
                             }
+
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .align(Alignment.BottomCenter)
+                                    .padding(16.dp),
+                                horizontalArrangement = Arrangement.SpaceAround
+                            ) {
+                                IconButton(
+                                    onClick = {
+                                        viewModel.onEvent(
+                                            NicknameAddEvent.TakePicture(
+                                                controller,
+                                                context
+                                            )
+                                        )
+                                    }
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.CheckCircle,
+                                        contentDescription = "Take photo"
+                                    )
+                                }
+                            }
                         }
-                    }
-                })
+                    })
+            }
         }
     }
 }
@@ -298,7 +305,7 @@ fun HomeScreenPreview() {
 
 class FakeNicknamesRepository : NicknameRepository {
     override fun getNicknames(): Flow<List<Nickname>> {
-        return flowOf(emptyList<Nickname>())
+        return flowOf(emptyList())
     }
 
     override suspend fun getNicknameById(id: Int): Nickname? {

@@ -7,4 +7,5 @@
     <string name="home">Início</string>
     <string name="posts">Posts</string>
     <string name="nicknames">Apelidos</string>
+    <string name="click_to_take_picture">(Tire uma foto clicando na imagem acima)</string>
 </resources>

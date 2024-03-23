@@ -80,7 +80,7 @@ class NicknameAddViewModel @Inject constructor(
 
             is NicknameAddEvent.TakePicture -> {
 
-                event.controller.takePicture(
+                event.controller?.takePicture(
                     ContextCompat.getMainExecutor(event.context),
                     object : ImageCapture.OnImageCapturedCallback() {
                         override fun onCaptureSuccess(image: ImageProxy) {
@@ -100,7 +100,7 @@ class NicknameAddViewModel @Inject constructor(
                             )
                             _bitmap.value = rotatedBitmap
                             viewModelScope.launch {
-                                _eventFlow.emit(UiEvent.PictureTaken("Foto tirada"))
+                                _eventFlow.emit(UiEvent.PictureTaken("Foto tirada", rotatedBitmap))
                             }
                         }
 
@@ -121,7 +121,7 @@ class NicknameAddViewModel @Inject constructor(
     sealed class UiEvent {
         data class ShowSnackbar(val message: String) : UiEvent()
         data object SavedNickname : UiEvent()
-        data class PictureTaken(val message: String) : UiEvent()
+        data class PictureTaken(val message: String, val bitmap: Bitmap) : UiEvent()
         data class PictureError(val message: String) : UiEvent()
     }
 }
