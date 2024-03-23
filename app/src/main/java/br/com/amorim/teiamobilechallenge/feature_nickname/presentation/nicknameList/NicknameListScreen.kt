@@ -10,11 +10,13 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -64,6 +66,17 @@ fun NicknameListScreen(
                                     .fillMaxWidth()
                                     .padding(8.dp)
                             )
+                        }
+                        if(viewModel.nicknamesList.value.isEmpty()) {
+                            item {
+                                Text(
+                                    textAlign = TextAlign.Center,
+                                    text = "Nenhum apelido cadastrado",
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(16.dp),
+                                )
+                            }
                         }
                     }
                 }
