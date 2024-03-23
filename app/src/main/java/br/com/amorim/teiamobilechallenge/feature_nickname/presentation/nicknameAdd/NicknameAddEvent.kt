@@ -8,5 +8,4 @@ sealed class NicknameAddEvent {
     data class SaveNickname(val nickname: Nickname): NicknameAddEvent()
     data class NicknameChanged(val value: String): NicknameAddEvent()
     data class  TakePicture(val controller: LifecycleCameraController, val context: Context): NicknameAddEvent()
-    data class CameraPermissionGranted(val granted: Boolean): NicknameAddEvent()
 }

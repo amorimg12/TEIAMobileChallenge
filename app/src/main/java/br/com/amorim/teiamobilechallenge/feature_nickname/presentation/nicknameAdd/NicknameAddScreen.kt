@@ -97,11 +97,9 @@ fun HomeScreen(
     ) {
         if (it) {
             Toast.makeText(context, "Permission Granted", Toast.LENGTH_SHORT).show()
-            viewModel.onEvent(NicknameAddEvent.CameraPermissionGranted(true))
             camPreviewDialog = true
         } else {
             Toast.makeText(context, "Permission Denied", Toast.LENGTH_SHORT).show()
-            viewModel.onEvent(NicknameAddEvent.CameraPermissionGranted(false))
         }
     }
 

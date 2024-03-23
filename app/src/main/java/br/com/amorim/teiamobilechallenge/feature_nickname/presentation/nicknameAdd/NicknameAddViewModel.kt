@@ -25,9 +25,6 @@ class NicknameAddViewModel @Inject constructor(
     private val nicknameUseCases: NicknameUseCases,
 ) : ViewModel() {
 
-    private val _camPermission = mutableStateOf(false)
-    val camPermission: State<Boolean> = _camPermission
-
     private val _bitmap = mutableStateOf<Bitmap?>(null)
     val bitmap: State<Bitmap?> = _bitmap
 
@@ -117,10 +114,6 @@ class NicknameAddViewModel @Inject constructor(
                         }
                     }
                 )
-            }
-
-            is NicknameAddEvent.CameraPermissionGranted -> {
-                _camPermission.value = event.granted
             }
         }
     }
