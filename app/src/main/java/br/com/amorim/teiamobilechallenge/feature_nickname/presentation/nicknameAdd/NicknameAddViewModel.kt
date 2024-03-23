@@ -1,7 +1,14 @@
 package br.com.amorim.teiamobilechallenge.feature_nickname.presentation.nicknameAdd
 
+import android.graphics.Bitmap
+import android.graphics.Matrix
+import android.util.Log
+import androidx.camera.core.ImageCapture
+import androidx.camera.core.ImageCaptureException
+import androidx.camera.core.ImageProxy
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import br.com.amorim.teiamobilechallenge.feature_nickname.domain.model.InvalidNickNameException
@@ -17,6 +24,12 @@ import javax.inject.Inject
 class NicknameAddViewModel @Inject constructor(
     private val nicknameUseCases: NicknameUseCases,
 ) : ViewModel() {
+
+    private val _camPermission = mutableStateOf(false)
+    val camPermission: State<Boolean> = _camPermission
+
+    private val _bitmap = mutableStateOf<Bitmap?>(null)
+    val bitmap: State<Bitmap?> = _bitmap
 
     private val _patError = mutableStateOf(false)
     val patError: State<Boolean> = _patError
@@ -67,11 +80,55 @@ class NicknameAddViewModel @Inject constructor(
                 _errorText.value = ""
                 _nickname.value = event.value
             }
+
+            is NicknameAddEvent.TakePicture -> {
+
+                event.controller.takePicture(
+                    ContextCompat.getMainExecutor(event.context),
+                    object : ImageCapture.OnImageCapturedCallback() {
+                        override fun onCaptureSuccess(image: ImageProxy) {
+                            super.onCaptureSuccess(image)
+
+                            val matrix = Matrix().apply {
+                                postRotate(image.imageInfo.rotationDegrees.toFloat())
+                            }
+                            val rotatedBitmap = Bitmap.createBitmap(
+                                image.toBitmap(),
+                                0,
+                                0,
+                                image.width,
+                                image.height,
+                                matrix,
+                                true
+                            )
+                            _bitmap.value = rotatedBitmap
+                            viewModelScope.launch {
+                                _eventFlow.emit(UiEvent.PictureTaken("Foto tirada"))
+                            }
+                        }
+
+                        override fun onError(exception: ImageCaptureException) {
+                            super.onError(exception)
+                            Log.e("Camera", "Couldn't take photo: ", exception)
+                            _bitmap.value = null
+                            viewModelScope.launch {
+                                _eventFlow.emit(UiEvent.PictureError ("Erro ao tirar foto: ${exception.message}"))
+                            }
+                        }
+                    }
+                )
+            }
+
+            is NicknameAddEvent.CameraPermissionGranted -> {
+                _camPermission.value = event.granted
+            }
         }
     }
 
     sealed class UiEvent {
         data class ShowSnackbar(val message: String) : UiEvent()
         data object SavedNickname : UiEvent()
+        data class PictureTaken(val message: String) : UiEvent()
+        data class PictureError(val message: String) : UiEvent()
     }
 }

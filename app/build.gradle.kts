@@ -99,6 +99,14 @@ dependencies {
     implementation(libs.androidx.paging.compose)
     implementation(libs.androidx.paging.runtime)
 
+    //Camera
+    implementation(libs.androidx.camera.camera2)
+    implementation (libs.camera.lifecycle)
+    implementation (libs.androidx.camera.view)
+
+    //Coil
+    implementation (libs.coil.compose)
+
 
 }
 kapt {
