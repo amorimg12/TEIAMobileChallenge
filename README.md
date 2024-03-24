@@ -13,3 +13,5 @@ Assim, temos um código escalável e bastante testável.
 
 Usa as tecnologias: JetPack Compose, Room (local storage) e Retrofit (remote)
 Para injeção de dependência, usa-se Dagger-Hilt
+
+Construído usando Android Studio Iguana - Preferencialmente deverá ser usado essa ferramenta para costrução e teste do aplicativo 
