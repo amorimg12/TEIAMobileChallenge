@@ -1,4 +1,4 @@
-O projeto foi concebido com conceitos de Architecture
+O projeto foi concebido com conceitos de Clean Architecture
 Está dividido em: 
   - features_nickname - Funcionalidades para o Apelido
   - features_posts - Funcionalidades para os post
